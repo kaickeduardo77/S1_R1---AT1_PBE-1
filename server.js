@@ -8,6 +8,7 @@ app.use(express.json());
 
 app.use('/', produtoRoutes);
 
+
 const PORT = process.env.SERVER_PORT || 8081;
 
 app.listen(PORT, () => {

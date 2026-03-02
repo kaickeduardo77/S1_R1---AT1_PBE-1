@@ -1,12 +1,16 @@
 import { Router } from "express";
-import uploadImage from "../middlewares/uploadimage.middlewares.js";
+import upload from "../config/upload.js";
 import produtoController from "../controllers/produtoControllers.js";
 
 const produtoRoutes = Router();
 
+produtoRoutes.get("/produtos", produtoController.listar);
 
-produtoRoutes.post("/produto", uploadImage, produtoController.criar);
-produtoRoutes.get("/", produtoController.listar);
-produtoRoutes.put("/:id", produtoController.atualizar);
-produtoRoutes.delete("/:id", produtoController.excluir);
+produtoRoutes.post("/produtos",upload.single("imagem"),produtoController.criar
+);
+
+produtoRoutes.put("/produtos/:idProduto", produtoController.atualizar);
+
+produtoRoutes.delete("/produtos/:idProduto", produtoController.excluir);
+
 export default produtoRoutes;

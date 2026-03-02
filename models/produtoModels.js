@@ -1,37 +1,43 @@
-import pool from "../config/produto.multer.js";
+import  pool from '../config/db.js';
 
 const produtoModel = {
 
-async criar() {
-const { idCategoria, nomeProduto, valorProduto, vinculoImagem } = produto;
-const sql = `INSERT INTO produto (idCategoria, nomeProduto, valorProduto, vinculoImagem, dataCad) VALUES (?, ?, ?, ?, ?())`;
-const [result] = await pool.execute(sql, [idCategoria, nomeProduto, valorProduto, vinculoImagem]);
-return { idProduto: result.insertId, };
-},
+    listar: async () => {
+        const [rows] = await pool.query(`
+            SELECT p.*, c.descricaoCategoria
+            FROM produto p
+            INNER JOIN categoria c ON p.idCategoria = c.idCategoria
+        `);
+        return rows;
+    },
 
-async listar() {
-const sql = `SELECT * FROM produto`;
-const [rows] = await pool.execute(sql);
-return rows;
-},
+    criar: async (idCategoria, nomeProduto, valorProduto, vinculoImagem) => {
+        const [result] = await pool.query(
+            `INSERT INTO produto 
+            (idCategoria, nomeProduto, valorProduto, vinculoImagem) 
+            VALUES (?, ?, ?, ?)`,
+            [idCategoria, nomeProduto, valorProduto, vinculoImagem]
+        );
+        return result;
+    },
 
-async buscarPorId(id) {
-const sql = `SELECT * FROM produto WHERE idProduto = ?`;
-const [rows] = await pool.execute(sql, [id]);
-return rows[0];
-},
+    atualizar: async (id, idCategoria, nomeProduto, valorProduto) => {
+        const [result] = await pool.query(
+            `UPDATE produto 
+             SET idCategoria=?, nomeProduto=?, valorProduto=? 
+             WHERE idProduto=?`,
+            [idCategoria, nomeProduto, valorProduto, id]
+        );
+        return result;
+    },
 
-async atualizar(id, produto) {
-const { idCategoria, nomeProduto, valorProduto } = produto;
-const sql = `UPDATE produto SET idCategoria = ?, nomeProduto = ?, valorProduto = ? WHERE idProduto = ?`;
-await pool.execute(sql, [idCategoria, nomeProduto, valorProduto, id]);
-return { idProduto: id, ...produto };
-},
-
-async excluir(id) {
-const sql = `DELETE FROM produto WHERE idProduto = ?`;
-await pool.execute(sql, [id]);
-}
+    excluir: async (id) => {
+        const [result] = await pool.query(
+            'DELETE FROM produto WHERE idProduto=?',
+            [id]
+        );
+        return result;
+    }
 
 };
 
